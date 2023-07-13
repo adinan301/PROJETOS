@@ -1,0 +1,58 @@
+import csv 
+
+class FilmeTabelaHash: 
+    def __init__(self):
+        self.tabela = {} 
+
+    def insere_filme(self, filme): 
+        filme_id = filme["movieId"] 
+        self.tabela[filme_id] = filme
+
+    def pesquisa_filme(self, pesquisa_chave, criterio):
+        for filme_id, filme in self.tabela.items(): 
+            if criterio == "movieId" and str(filme_id) == pesquisa_chave:
+                return filme 
+            if criterio == "title" and filme["title"].lower() == pesquisa_chave.lower():
+                return filme
+            if criterio == "genres" and pesquisa_chave.lower() in filme["genres"].lower():
+                return filme 
+        return None
+    
+#CARREGA O ARQUIVO CSV DA BASE
+
+def carrega_filmes_da_base(caminho_arquivo):
+    filmes = []
+    with open(caminho_arquivo, "r", encoding="utf-8") as arquivo:
+        leitor = csv.DictReader(arquivo)
+        for linha in leitor:
+            filmes.append(linha)
+    return filmes
+
+caminho_arquivo = "C:/Users/adina/Desktop/MOVIES/movies.csv"
+filmes = carrega_filmes_da_base(caminho_arquivo)
+
+tabela_hash = FilmeTabelaHash() 
+
+#INSERE FILMES NA TABELA HASH 
+
+for filme in filmes: 
+    tabela_hash.insere_filme(filme) 
+
+#SOLICITAR AO USUARIO QUAL O CRITERIO DE PESQUISA
+#TRATA AS EXECÇÕES 
+
+criterios_validos = ["movieId", "title", "genres"]
+pesquisa_criterio = input("INFORME O CRITÉRIO DE PESQUISA DESEJADO (movieId, title ou genres): ")
+while pesquisa_criterio not in criterios_validos:
+    print("CRITERIO INVALIDO, INSIRA UM CRITERIO VALIDO")
+    pesquisa_criterio = input("INFORME O CRITERIO DE PESQUISA DESEJADO (movieId, title ou genres): ")
+
+#PESQUISAR O FILME PELO CRITERIO 
+
+pesquisa_chave = input ("INFORME O ID / NOME / GENERO A SER PESQUISADO: " )
+resultado = tabela_hash.pesquisa_filme(pesquisa_chave, pesquisa_criterio) 
+
+if resultado:
+    print("FILME ENCONTRADO PELO CRITERIO", pesquisa_criterio + ":", resultado)
+else:
+    print("NENHUM FILME ENCONTRADO PELO CRITERIO", pesquisa_criterio + ".")
